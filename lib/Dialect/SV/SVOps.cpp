@@ -1442,8 +1442,12 @@ void ArrayIndexInOutOp::build(OpBuilder &builder, OperationState &result,
 // IndexedPartSelectInOutOp
 //===----------------------------------------------------------------------===//
 
+<<<<<<< HEAD
 // A helper function to infer a return type of IndexedPartSelectInOutOp.
 static Type getElementTypeOfWidth(Type type, int32_t width) {
+=======
+static Type inferReturn(Type type, int32_t width) {
+>>>>>>> 5528a688f (save)
   auto elemTy = type.cast<hw::InOutType>().getElementType();
   if (elemTy.isa<IntegerType>())
     return hw::InOutType::get(IntegerType::get(type.getContext(), width));
@@ -1452,11 +1456,18 @@ static Type getElementTypeOfWidth(Type type, int32_t width) {
         elemTy.cast<hw::ArrayType>().getElementType(), width));
   return {};
 }
+<<<<<<< HEAD
 
 void IndexedPartSelectInOutOp::build(OpBuilder &builder, OperationState &result,
                                      Value input, Value base, int32_t width,
                                      bool decrement) {
   Type resultType = getElementTypeOfWidth(input.getType(), width);
+=======
+void IndexedPartSelectInOutOp::build(OpBuilder &builder, OperationState &result,
+                                     Value input, Value base, int32_t width,
+                                     bool decrement) {
+  Type resultType = inferReturn(input.getType(), width);
+>>>>>>> 5528a688f (save)
   build(builder, result, resultType, input, base, width, decrement);
 }
 
