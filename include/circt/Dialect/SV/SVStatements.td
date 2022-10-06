@@ -410,6 +410,7 @@ def BPAssignOp : SVOp<"bpassign", [InOutTypeConstraint<"src", "dest">,
     occur in initial, always, task, and function blocks.  The statement is
     executed before any following statements are. See SV Spec 10.4.1.
   }];
+  let hasCanonicalizeMethod = true;
   let arguments = (ins InOutType:$dest, InOutElementType:$src);
   let results = (outs);
   let assemblyFormat = "$dest `,` $src  attr-dict `:` qualified(type($src))";
@@ -424,6 +425,7 @@ def PAssignOp : SVOp<"passign", [InOutTypeConstraint<"src", "dest">,
     These occur in initial, always, task, and function blocks.  The statement
     can be scheduled without blocking procedural flow.  See SV Spec 10.4.2.
   }];
+  let hasCanonicalizeMethod = true;
   let arguments = (ins InOutType:$dest, InOutElementType:$src);
   let results = (outs);
   let assemblyFormat = "$dest `,` $src  attr-dict `:` qualified(type($src))";
