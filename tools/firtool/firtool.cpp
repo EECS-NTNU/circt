@@ -718,6 +718,10 @@ processBuffer(MLIRContext &context, TimingScope &ts, llvm::SourceMgr &sourceMgr,
   // Lower if we are going to verilog or if lowering was specifically requested.
   if (outputFormat != OutputIRFir) {
 
+    // Remove TraceAnnotations and write their updated paths to an output
+    // annotation file.
+    pm.nest<firrtl::CircuitOp>().addPass(firrtl::createResolveTracesPass());
+
     // Lower the ref.resolve and ref.send ops and remove the RefType ports.
     // LowerToHW cannot handle RefType so, this pass must be run to remove all
     // RefType ports and ops.
