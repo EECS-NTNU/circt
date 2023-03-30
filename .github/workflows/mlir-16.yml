@@ -1,0 +1,39 @@
+name: MLIR-16
+
+on:
+  push:
+    branches: [ mlir-16-dev ]
+  pull_request:
+    branches: [ mlir-16-dev ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Get LLVM apt key
+      run: wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+    - name: Update sources
+      run: sudo add-apt-repository deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-16 main
+    - name: Install dependencies (LLVM-16, MLIR-16, Clang-16, and ninja)
+      run: sudo apt-get install llvm-16-dev libmlir-16-dev mlir-16-tools clang-16 ninja-build
+    - name: Instal llvm-lit
+      run: sudo python3 /usr/lib/llvm-16/build/utils/lit/setup.py install
+    - name: Configure CIRCT
+      run: |
+        mkdir build
+        cd build
+        cmake -G Ninja .. \
+                -DCMAKE_C_COMPILER=clang-16 \
+                -DCMAKE_CXX_COMPILER=clang++-16 \
+                -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+                -DLLVM_DIR=/usr/lib/llvm-16/cmake/ \
+                -DMLIR_DIR=/usr/lib/llvm-16/lib/cmake/mlir \
+                -DLLVM_EXTERNAL_LIT=/usr/local/bin/lit \
+                -DLLVM_LIT_ARGS="-v --show-unsupported" \
+                -DVERILATOR_DISABLE=ON
+    - name: Build CIRCT
+      run: ninja -C build -j$(nproc)
+    - name: Test CIRCT
+      run: ninja -C build check-circt -j$(nproc)
+

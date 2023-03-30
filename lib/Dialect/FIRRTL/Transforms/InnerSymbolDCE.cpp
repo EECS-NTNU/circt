@@ -59,11 +59,18 @@ private:
 
 /// Find all InnerRefAttrs inside a given Attribute.
 void InnerSymbolDCEPass::findInnerRefs(Attribute attr) {
-  // Check if this Attribute or any sub-Attributes are InnerRefAttrs.
-  attr.walk([&](Attribute subAttr) {
-    if (auto innerRef = dyn_cast<InnerRefAttr>(subAttr))
-      insertInnerRef(innerRef);
-  });
+  // Check if this Attribute is an InnerRefAttr.
+  if (auto innerRef = dyn_cast<InnerRefAttr>(attr)) {
+    insertInnerRef(innerRef);
+    return;
+  }
+
+  // Check if any sub-Attributes are InnerRefAttrs.
+  if (auto subElementAttr = dyn_cast<SubElementAttrInterface>(attr))
+    subElementAttr.walkSubAttrs([&](Attribute subAttr) {
+      if (auto innerRef = dyn_cast<InnerRefAttr>(subAttr))
+        insertInnerRef(innerRef);
+    });
 }
 
 /// Add an InnerRefAttr to the set of all InnerRefAttrs.

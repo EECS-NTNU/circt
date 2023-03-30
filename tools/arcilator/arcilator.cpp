@@ -260,8 +260,7 @@ processBuffer(MLIRContext &context, TimingScope &ts, llvm::SourceMgr &sourceMgr,
   PassManager pm(&context);
   pm.enableVerifier(verifyPasses);
   pm.enableTiming(ts);
-  if (failed(applyPassManagerCLOptions(pm)))
-    return failure();
+  applyPassManagerCLOptions(pm);
   populatePipeline(pm);
 
   if (failed(pm.run(module.get())))
@@ -357,7 +356,6 @@ static LogicalResult executeArcilator(MLIRContext &context) {
                   mlir::cf::ControlFlowDialect, mlir::LLVM::LLVMDialect>();
 
   arc::initAllExternalInterfaces(registry);
-  mlir::registerBuiltinDialectTranslation(registry);
   mlir::registerLLVMDialectTranslation(registry);
   context.appendDialectRegistry(registry);
 

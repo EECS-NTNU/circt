@@ -2,7 +2,7 @@
 
 // CHECK: OVERVIEW: CIRCT Translation Testing Tool
 
-// CHECK: Translations to perform
+// CHECK: Translation to perform
 // CHECK: --export-calyx
 // CHECK: --export-firrtl
 // CHECK: --import-firrtl

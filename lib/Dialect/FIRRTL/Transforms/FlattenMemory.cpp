@@ -132,7 +132,7 @@ struct FlattenMemoryPass : public FlattenMemoryBase<FlattenMemoryPass> {
              fieldIndex != fend; ++fieldIndex) {
           auto name = rType.getElement(fieldIndex).name.getValue();
           auto oldField = builder.create<SubfieldOp>(result, fieldIndex);
-          FIRRTLBaseValue newField =
+          auto newField =
               builder.create<SubfieldOp>(newResult, fieldIndex);
           // data and mask depend on the memory type which was split.  They can
           // also go both directions, depending on the port direction.

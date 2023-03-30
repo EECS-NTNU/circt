@@ -1,6 +1,7 @@
 /build*
 /install*
 /docker_build
+/local
 tags
 TAGS
 .vscode
