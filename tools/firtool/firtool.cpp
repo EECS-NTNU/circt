@@ -508,8 +508,7 @@ static LogicalResult processBuffer(
         std::make_unique<
             VerbosePassInstrumentation<firrtl::CircuitOp, mlir::ModuleOp>>(
             "firtool"));
-  if (failed(applyPassManagerCLOptions(pm)))
-    return failure();
+  applyPassManagerCLOptions(pm);
 
   pm.nest<firrtl::CircuitOp>().addPass(firrtl::createLowerFIRRTLAnnotationsPass(
       disableAnnotationsUnknown, disableAnnotationsClassless,
@@ -740,8 +739,7 @@ static LogicalResult processBuffer(
       outputFormat == OutputIRVerilog) {
     PassManager exportPm(&context);
     exportPm.enableTiming(ts);
-    if (failed(applyPassManagerCLOptions(exportPm)))
-      return failure();
+    applyPassManagerCLOptions(exportPm);
     if (verbosePassExecutions)
       exportPm.addInstrumentation(
           std::make_unique<

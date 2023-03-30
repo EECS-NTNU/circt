@@ -11,7 +11,6 @@ target_link_libraries(arcilator
   CIRCTSupport
   MLIRParser
   MLIRTargetLLVMIRExport
-  MLIRBuiltinToLLVMIRTranslation
   MLIRLLVMToLLVMIRTranslation
 )
 

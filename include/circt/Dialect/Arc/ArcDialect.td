@@ -24,6 +24,7 @@ def ArcDialect : Dialect {
   let extraClassDeclaration = [{
     void registerTypes();
   }];
+  let useFoldAPI = kEmitFoldAdaptorFolder;
 }
 
 #endif // CIRCT_DIALECT_ARC_ARCDIALECT_TD

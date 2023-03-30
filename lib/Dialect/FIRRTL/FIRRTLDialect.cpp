@@ -66,7 +66,8 @@ Operation *FIRRTLDialect::materializeConstant(OpBuilder &builder,
         (type.isa<ClockType>() || type.isa<AsyncResetType>() ||
          type.isa<ResetType>()))
       return builder.create<SpecialConstantOp>(
-          loc, type, builder.getBoolAttr(attrValue.getValue().isAllOnes()));
+          loc, type,
+          builder.getBoolAttr(attrValue.getValue().isAllOnesValue()));
 
     assert((!type.cast<IntType>().hasWidth() ||
             (unsigned)type.cast<IntType>().getWidthOrSentinel() ==

@@ -41,6 +41,7 @@ def OMDialect : Dialect {
     /// Register all OM types.
     void registerAttributes();
   }];
+  let useFoldAPI = kEmitFoldAdaptorFolder;
 }
 
 #endif // CIRCT_DIALECT_OM_OMDIALECT

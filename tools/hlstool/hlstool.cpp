@@ -420,8 +420,7 @@ static LogicalResult processBuffer(
   PassManager pm(&context);
   pm.enableVerifier(verifyPasses);
   pm.enableTiming(ts);
-  if (failed(applyPassManagerCLOptions(pm)))
-    return failure();
+  applyPassManagerCLOptions(pm);
 
   if (hlsFlow == HLSFlow::HLSFlowDynamicFIRRTL ||
       hlsFlow == HLSFlow::HLSFlowDynamicHW) {

@@ -131,14 +131,6 @@ ArrayRef<mlir::Type> SCModuleOp::getCallableResults() {
   return getResultTypes();
 }
 
-ArrayAttr SCModuleOp::getCallableArgAttrs() {
-  return getArgAttrs().value_or(nullptr);
-}
-
-ArrayAttr SCModuleOp::getCallableResAttrs() {
-  return getResAttrs().value_or(nullptr);
-}
-
 StringRef SCModuleOp::getModuleName() {
   return (*this)
       ->getAttrOfType<StringAttr>(SymbolTable::getSymbolAttrName())

@@ -16,6 +16,8 @@ def LoopSchedule_Dialect : Dialect {
   let name = "loopschedule";
   let cppNamespace = "::circt::loopschedule";
   let summary = "Representation of scheduled loops";
+
+  let useFoldAPI = kEmitFoldAdaptorFolder;
 }
 
 include "circt/Dialect/LoopSchedule/LoopScheduleOps.td"

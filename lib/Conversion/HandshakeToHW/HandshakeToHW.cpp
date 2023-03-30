@@ -1789,9 +1789,9 @@ public:
       auto hwModuleOp = rewriter.create<hw::HWModuleOp>(
           op.getLoc(), rewriter.getStringAttr(op.getName()), ports);
       auto args = hwModuleOp.getArguments().drop_back(2);
-      rewriter.inlineBlockBefore(&op.getBody().front(),
-                                 hwModuleOp.getBodyBlock()->getTerminator(),
-                                 args);
+      rewriter.mergeBlockBefore(&op.getBody().front(),
+                                hwModuleOp.getBodyBlock()->getTerminator(),
+                                args);
       hwModule = hwModuleOp;
     }
 
