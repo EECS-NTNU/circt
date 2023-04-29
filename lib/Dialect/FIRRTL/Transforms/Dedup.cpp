@@ -717,8 +717,7 @@ struct Deduper {
 private:
   /// Get a cached namespace for a module.
   ModuleNamespace &getNamespace(Operation *module) {
-    auto [it, inserted] =
-        moduleNamespaces.try_emplace(module, cast<FModuleLike>(module));
+    auto [it, inserted] = moduleNamespaces.try_emplace(module, module);
     return it->second;
   }
 
@@ -749,7 +748,7 @@ private:
   /// of the "toModule".
   void replaceInstances(FModuleLike toModule, Operation *fromModule) {
     // Replace all instances of the other module.
-    auto *fromNode = instanceGraph[::cast<hw::HWModuleLike>(fromModule)];
+    auto *fromNode = instanceGraph[fromModule];
     auto *toNode = instanceGraph[::cast<hw::HWModuleLike>(*toModule)];
     auto toModuleRef = FlatSymbolRefAttr::get(toModule.moduleNameAttr());
     for (auto *oldInstRec : llvm::make_early_inc_range(fromNode->uses())) {
@@ -777,9 +776,8 @@ private:
     namepath.append(baseNamepath.begin(), baseNamepath.end());
 
     auto loc = fromModule->getLoc();
-    auto *fromNode = instanceGraph[cast<hw::HWModuleLike>(fromModule)];
     SmallVector<FlatSymbolRefAttr> nlas;
-    for (auto *instanceRecord : fromNode->uses()) {
+    for (auto *instanceRecord : instanceGraph[fromModule]->uses()) {
       auto parent = cast<FModuleOp>(*instanceRecord->getParent()->getModule());
       auto inst = instanceRecord->getInstance();
       namepath[0] = OpAnnoTarget(inst).getNLAReference(getNamespace(parent));

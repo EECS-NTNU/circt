@@ -48,7 +48,6 @@
 
 using namespace mlir;
 using namespace mlir::func;
-using namespace mlir::affine;
 using namespace circt;
 using namespace circt::handshake;
 using namespace circt::analysis;
@@ -68,7 +67,7 @@ public:
     addLegalDialect<mlir::func::FuncDialect>();
     addLegalDialect<mlir::arith::ArithDialect>();
     addIllegalDialect<mlir::scf::SCFDialect>();
-    addIllegalDialect<AffineDialect>();
+    addIllegalDialect<mlir::AffineDialect>();
 
     /// The root operation to be replaced is marked dynamically legal
     /// based on the lowering status of the given operation, see
@@ -1228,7 +1227,7 @@ static LogicalResult getOpMemRef(Operation *op, Value &out) {
     out = memOp.getMemRef();
   else if (auto memOp = dyn_cast<memref::StoreOp>(op))
     out = memOp.getMemRef();
-  else if (isa<AffineReadOpInterface, AffineWriteOpInterface>(op)) {
+  else if (isa<mlir::AffineReadOpInterface, mlir::AffineWriteOpInterface>(op)) {
     MemRefAccess access(op);
     out = access.memref;
   }
@@ -1238,8 +1237,8 @@ static LogicalResult getOpMemRef(Operation *op, Value &out) {
 }
 
 static bool isMemoryOp(Operation *op) {
-  return isa<memref::LoadOp, memref::StoreOp, AffineReadOpInterface,
-             AffineWriteOpInterface>(op);
+  return isa<memref::LoadOp, memref::StoreOp, mlir::AffineReadOpInterface,
+             mlir::AffineWriteOpInterface>(op);
 }
 
 LogicalResult
@@ -1291,40 +1290,41 @@ HandshakeLowering::replaceMemoryOps(ConversionPatternRewriter &rewriter,
           newOp = rewriter.create<handshake::StoreOp>(
               op.getLoc(), storeOp.getValueToStore(), operands);
         })
-        .Case<AffineReadOpInterface, AffineWriteOpInterface>([&](auto) {
-          // Get essential memref access inforamtion.
-          MemRefAccess access(&op);
-          // The address of an affine load/store operation can be a result
-          // of an affine map, which is a linear combination of constants
-          // and parameters. Therefore, we should extract the affine map of
-          // each address and expand it into proper expressions that
-          // calculate the result.
-          AffineMap map;
-          if (auto loadOp = dyn_cast<AffineReadOpInterface>(op))
-            map = loadOp.getAffineMap();
-          else
-            map = dyn_cast<AffineWriteOpInterface>(op).getAffineMap();
+        .Case<mlir::AffineReadOpInterface, mlir::AffineWriteOpInterface>(
+            [&](auto) {
+              // Get essential memref access inforamtion.
+              MemRefAccess access(&op);
+              // The address of an affine load/store operation can be a result
+              // of an affine map, which is a linear combination of constants
+              // and parameters. Therefore, we should extract the affine map of
+              // each address and expand it into proper expressions that
+              // calculate the result.
+              mlir::AffineMap map;
+              if (auto loadOp = dyn_cast<mlir::AffineReadOpInterface>(op))
+                map = loadOp.getAffineMap();
+              else
+                map = dyn_cast<mlir::AffineWriteOpInterface>(op).getAffineMap();
 
-          // The returned object from expandAffineMap is an optional list of
-          // the expansion results from the given affine map, which are the
-          // actual address indices that can be used as operands for
-          // handshake LoadOp/StoreOp. The following processing requires it
-          // to be a valid result.
-          auto operands =
-              expandAffineMap(rewriter, op.getLoc(), map, access.indices);
-          assert(operands && "Address operands of affine memref access "
-                             "cannot be reduced.");
+              // The returned object from expandAffineMap is an optional list of
+              // the expansion results from the given affine map, which are the
+              // actual address indices that can be used as operands for
+              // handshake LoadOp/StoreOp. The following processing requires it
+              // to be a valid result.
+              auto operands =
+                  expandAffineMap(rewriter, op.getLoc(), map, access.indices);
+              assert(operands && "Address operands of affine memref access "
+                                 "cannot be reduced.");
 
-          if (isa<AffineReadOpInterface>(op)) {
-            auto loadOp = rewriter.create<handshake::LoadOp>(
-                op.getLoc(), access.memref, *operands);
-            newOp = loadOp;
-            op.getResult(0).replaceAllUsesWith(loadOp.getDataResult());
-          } else {
-            newOp = rewriter.create<handshake::StoreOp>(
-                op.getLoc(), op.getOperand(0), *operands);
-          }
-        })
+              if (isa<mlir::AffineReadOpInterface>(op)) {
+                auto loadOp = rewriter.create<handshake::LoadOp>(
+                    op.getLoc(), access.memref, *operands);
+                newOp = loadOp;
+                op.getResult(0).replaceAllUsesWith(loadOp.getDataResult());
+              } else {
+                newOp = rewriter.create<handshake::StoreOp>(
+                    op.getLoc(), op.getOperand(0), *operands);
+              }
+            })
         .Default([&](auto) {
           op.emitOpError("Load/store operation cannot be handled.");
         });
@@ -1705,6 +1705,7 @@ static LogicalResult lowerFuncOp(func::FuncOp funcOp, MLIRContext *ctx,
 
   return success();
 }
+
 
 namespace {
 

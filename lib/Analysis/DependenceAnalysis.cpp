@@ -22,7 +22,6 @@
 #include "mlir/IR/BuiltinOps.h"
 
 using namespace mlir;
-using namespace mlir::affine;
 using namespace circt::analysis;
 
 /// Helper to iterate through memory operation pairs and check for dependences
@@ -130,7 +129,7 @@ circt::analysis::MemoryDependenceAnalysis::MemoryDependenceAnalysis(
 
   // Collect affine loops grouped by nesting depth.
   std::vector<SmallVector<AffineForOp, 2>> depthToLoops;
-  mlir::affine::gatherLoops(funcOp, depthToLoops);
+  mlir::gatherLoops(funcOp, depthToLoops);
 
   // Collect load and store operations to check.
   SmallVector<Operation *> memoryOps;

@@ -471,8 +471,6 @@ TypeLoweringVisitor::getPreservationModeForModule(FModuleLike module) {
   case Convention::Internal:
     return aggregatePreservationMode;
   }
-  llvm_unreachable("Unknown convention");
-  return aggregatePreservationMode;
 }
 
 Value TypeLoweringVisitor::getSubWhatever(Value val, size_t index) {

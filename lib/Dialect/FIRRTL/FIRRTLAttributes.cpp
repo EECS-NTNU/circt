@@ -76,7 +76,7 @@ void FIRRTLDialect::registerAttributes() {
 Attribute ParamDeclAttr::parse(AsmParser &p, Type trailing) {
   std::string name;
   Type type;
-  TypedAttr value;
+  Attribute value;
   // < "FOO" : i32 > : i32
   // < "FOO" : i32 = 0 > : i32
   // < "FOO" : none >

@@ -365,8 +365,7 @@ Attribute ParamDeclAttr::parse(AsmParser &p, Type trailing) {
     return Attribute();
 
   if (value)
-    return ParamDeclAttr::get(p.getContext(),
-                              p.getBuilder().getStringAttr(name), type, value);
+    return ParamDeclAttr::get(name, value);
   return ParamDeclAttr::get(name, type);
 }
 
@@ -573,7 +572,7 @@ static TypedAttr simplifyAssocOp(
       operands.pop_back();
   }
 
-  return operands.size() == 1 ? operands[0] : TypedAttr();
+  return operands.size() == 1 ? operands[0] : Attribute();
 }
 
 /// Analyze an operand to an add.  If it is a multiplication by a constant (e.g.
@@ -940,7 +939,7 @@ replaceDeclRefInExpr(Location loc,
       auto res = replaceDeclRefInExpr(loc, parameters, operand);
       if (failed(res))
         return {failure()};
-      replacedOperands.push_back(res->cast<TypedAttr>());
+      replacedOperands.push_back(*res);
     }
     return {
         hw::ParamExprAttr::get(paramExprAttr.getOpcode(), replacedOperands)};
@@ -949,7 +948,7 @@ replaceDeclRefInExpr(Location loc,
   return {};
 }
 
-FailureOr<TypedAttr> hw::evaluateParametricAttr(Location loc,
+FailureOr<Attribute> hw::evaluateParametricAttr(Location loc,
                                                 ArrayAttr parameters,
                                                 Attribute paramAttr) {
   // Create a map of the provided parameters for faster lookup.
@@ -967,8 +966,8 @@ FailureOr<TypedAttr> hw::evaluateParametricAttr(Location loc,
   paramAttr = *paramAttrRes;
 
   // Then, evaluate the parametric attribute.
-  if (paramAttr.isa<IntegerAttr, hw::ParamDeclRefAttr>())
-    return paramAttr.cast<TypedAttr>();
+  if (paramAttr.isa<IntegerAttr>() || paramAttr.isa<hw::ParamDeclRefAttr>())
+    return paramAttr;
   if (auto paramExprAttr = paramAttr.dyn_cast<hw::ParamExprAttr>()) {
     // Since any ParamDeclRefAttr was replaced within the expression,
     // we re-evaluate the expression through the existing ParamExprAttr
@@ -978,7 +977,7 @@ FailureOr<TypedAttr> hw::evaluateParametricAttr(Location loc,
   }
 
   llvm_unreachable("Unhandled parametric attribute");
-  return TypedAttr();
+  return Attribute();
 }
 
 FailureOr<Type> hw::evaluateParametricType(Location loc, ArrayAttr parameters,
@@ -996,7 +995,7 @@ FailureOr<Type> hw::evaluateParametricType(Location loc, ArrayAttr parameters,
                                    intAttr.getValue().getSExtValue())};
 
         // Otherwise parameter references are still involved
-        return hw::IntType::get(evaluatedWidth->cast<TypedAttr>());
+        return hw::IntType::get(*evaluatedWidth);
       })
       .Case<hw::ArrayType>([&](hw::ArrayType arrayType) -> FailureOr<Type> {
         auto size =

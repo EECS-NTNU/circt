@@ -599,7 +599,7 @@ FIRRTLBaseType::getSubTypeByFieldID(uint64_t fieldID) {
           [&](auto type) { return type.getSubTypeByFieldID(fieldID); })
       .Default([](Type) {
         llvm_unreachable("unknown FIRRTL type");
-        return std::pair(circt::hw::FieldIDTypeInterface(), 0);
+        return std::pair(FIRRTLBaseType(), 0);
       });
 }
 
@@ -1121,7 +1121,7 @@ BundleType::getSubTypeByFieldID(uint64_t fieldID) {
   auto subfieldIndex = getIndexForFieldID(fieldID);
   auto subfieldType = getElementType(subfieldIndex);
   auto subfieldID = fieldID - getFieldID(subfieldIndex);
-  return {subfieldType.cast<circt::hw::FieldIDTypeInterface>(), subfieldID};
+  return {subfieldType, subfieldID};
 }
 
 uint64_t BundleType::getMaxFieldID() { return getImpl()->maxFieldID; }
@@ -1233,8 +1233,7 @@ std::pair<circt::hw::FieldIDTypeInterface, uint64_t>
 FVectorType::getSubTypeByFieldID(uint64_t fieldID) {
   if (fieldID == 0)
     return {*this, 0};
-  return {getElementType().cast<circt::hw::FieldIDTypeInterface>(),
-          getIndexForFieldID(fieldID)};
+  return {getElementType(), getIndexForFieldID(fieldID)};
 }
 
 uint64_t FVectorType::getMaxFieldID() {
@@ -1411,7 +1410,7 @@ FEnumType::getSubTypeByFieldID(uint64_t fieldID) {
   auto subfieldIndex = getIndexForFieldID(fieldID);
   auto subfieldType = getElementType(subfieldIndex);
   auto subfieldID = fieldID - getFieldID(subfieldIndex);
-  return {subfieldType.cast<circt::hw::FieldIDTypeInterface>(), subfieldID};
+  return {subfieldType, subfieldID};
 }
 
 uint64_t FEnumType::getMaxFieldID() { return getImpl()->maxFieldID; }

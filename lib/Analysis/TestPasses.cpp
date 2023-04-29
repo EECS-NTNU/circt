@@ -22,7 +22,6 @@
 #include "llvm/Support/Debug.h"
 
 using namespace mlir;
-using namespace mlir::affine;
 using namespace circt::analysis;
 
 //===----------------------------------------------------------------------===//
@@ -55,7 +54,7 @@ void TestDependenceAnalysisPass::runOnOperation() {
     SmallVector<Attribute> deps;
 
     for (auto dep : analysis.getDependences(op)) {
-      if (dep.dependenceType != DependenceResult::HasDependence)
+      if (dep.dependenceType != mlir::DependenceResult::HasDependence)
         continue;
 
       SmallVector<Attribute> comps;
