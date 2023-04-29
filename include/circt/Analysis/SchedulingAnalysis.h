@@ -39,11 +39,10 @@ namespace analysis {
 struct CyclicSchedulingAnalysis {
   CyclicSchedulingAnalysis(Operation *funcOp, AnalysisManager &am);
 
-  CyclicProblem &getProblem(affine::AffineForOp forOp);
+  CyclicProblem &getProblem(AffineForOp forOp);
 
 private:
-  void analyzeForOp(affine::AffineForOp forOp,
-                    MemoryDependenceAnalysis memoryAnalysis);
+  void analyzeForOp(AffineForOp forOp, MemoryDependenceAnalysis memoryAnalysis);
 
   DenseMap<Operation *, CyclicProblem> problems;
 };

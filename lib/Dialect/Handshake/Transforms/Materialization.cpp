@@ -28,7 +28,6 @@
 using namespace circt;
 using namespace handshake;
 using namespace mlir;
-using namespace mlir::affine;
 
 using BlockValues = DenseMap<Block *, std::vector<Value>>;
 
@@ -107,7 +106,7 @@ LogicalResult addSinkOps(Region &r, OpBuilder &rewriter) {
       // equivalents
       // TODO: should we use other indicator for op that has been erased?
       if (isa<mlir::cf::CondBranchOp, mlir::cf::BranchOp, memref::LoadOp,
-              AffineReadOpInterface, AffineForOp>(op))
+              mlir::AffineReadOpInterface, mlir::AffineForOp>(op))
         continue;
 
       if (op.getNumResults() == 0)

@@ -19,9 +19,7 @@
 #include <utility>
 
 namespace mlir {
-namespace affine {
 struct DependenceComponent;
-} // namespace affine
 namespace func {
 class FuncOp;
 } // namespace func
@@ -34,10 +32,9 @@ namespace analysis {
 /// It represents the destination of the dependence edge, the type of the
 /// dependence, and the components associated with each enclosing loop.
 struct MemoryDependence {
-  MemoryDependence(
-      Operation *source,
-      mlir::affine::DependenceResult::ResultEnum dependenceType,
-      ArrayRef<mlir::affine::DependenceComponent> dependenceComponents)
+  MemoryDependence(Operation *source,
+                   mlir::DependenceResult::ResultEnum dependenceType,
+                   ArrayRef<mlir::DependenceComponent> dependenceComponents)
       : source(source), dependenceType(dependenceType),
         dependenceComponents(dependenceComponents.begin(),
                              dependenceComponents.end()) {}
@@ -46,10 +43,10 @@ struct MemoryDependence {
   Operation *source;
 
   // The dependence type denotes whether or not there is a dependence.
-  mlir::affine::DependenceResult::ResultEnum dependenceType;
+  mlir::DependenceResult::ResultEnum dependenceType;
 
   // The dependence components include lower and upper bounds for each loop.
-  SmallVector<mlir::affine::DependenceComponent> dependenceComponents;
+  SmallVector<mlir::DependenceComponent> dependenceComponents;
 };
 
 /// MemoryDependenceResult captures a set of memory dependences. The map key is

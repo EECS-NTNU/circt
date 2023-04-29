@@ -107,11 +107,11 @@ struct SubExprInfo {
 // Helper routines
 //===----------------------------------------------------------------------===//
 
-static TypedAttr getInt32Attr(MLIRContext *ctx, uint32_t value) {
+static Attribute getInt32Attr(MLIRContext *ctx, uint32_t value) {
   return Builder(ctx).getI32IntegerAttr(value);
 }
 
-static TypedAttr getIntAttr(MLIRContext *ctx, Type t, const APInt &value) {
+static Attribute getIntAttr(MLIRContext *ctx, Type t, const APInt &value) {
   return Builder(ctx).getIntegerAttr(t, value);
 }
 
@@ -1317,7 +1317,7 @@ static void emitDims(ArrayRef<Attribute> dims, raw_ostream &os, Location loc,
 
     // Otherwise it must be a parameterized dimension.  Shove the "-1" into the
     // attribute so it gets printed in canonical form.
-    auto typedAttr = width.dyn_cast<TypedAttr>();
+    auto typedAttr = width.dyn_cast<mlir::TypedAttr>();
     if (!typedAttr) {
       mlir::emitError(loc, "untyped dimension attribute ") << width;
       continue;
@@ -1325,7 +1325,7 @@ static void emitDims(ArrayRef<Attribute> dims, raw_ostream &os, Location loc,
     auto negOne = getIntAttr(
         loc.getContext(), typedAttr.getType(),
         APInt(typedAttr.getType().getIntOrFloatBitWidth(), -1L, true));
-    width = ParamExprAttr::get(PEO::Add, typedAttr, negOne);
+    width = ParamExprAttr::get(PEO::Add, width, negOne);
     os << '[';
     emitter.printParamValue(width, os, [loc]() {
       return mlir::emitError(loc, "invalid parameter in type");
