@@ -12,7 +12,7 @@
 using namespace circt;
 
 // Converts a function type wrt. the given type converter.
-static FunctionType convertFunctionType(const TypeConverter &typeConverter,
+static FunctionType convertFunctionType(TypeConverter &typeConverter,
                                         FunctionType type) {
   // Convert the original function types.
   llvm::SmallVector<Type> res, arg;
@@ -25,7 +25,7 @@ static FunctionType convertFunctionType(const TypeConverter &typeConverter,
 }
 
 // Converts a function type wrt. the given type converter.
-static hw::ModuleType convertModuleType(const TypeConverter &typeConverter,
+static hw::ModuleType convertModuleType(TypeConverter &typeConverter,
                                         hw::ModuleType type) {
   // Convert the original function types.
   SmallVector<hw::ModulePort> ports(type.getPorts());

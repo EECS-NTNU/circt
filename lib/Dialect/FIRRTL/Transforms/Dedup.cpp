@@ -1499,7 +1499,7 @@ class DedupPass : public DedupBase<DedupPass> {
 
     // Calculate module information parallelly.
     auto result = mlir::failableParallelForEach(
-        context, llvm::seq(modules.size()), [&](unsigned idx) {
+        context, llvm::seq((size_t)0, modules.size()), [&](unsigned idx) {
           auto module = modules[idx];
           AnnotationSet annotations(module);
           // If the module is marked with NoDedup, just skip it.

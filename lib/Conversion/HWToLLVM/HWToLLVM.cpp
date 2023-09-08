@@ -397,7 +397,7 @@ class AggregateConstantOpConversion
                SmallVectorImpl<Attribute> &output) const;
 
   Value constructAggregate(OpBuilder &builder,
-                           const TypeConverter &typeConverter, Location loc,
+                           TypeConverter &typeConverter, Location loc,
                            Type type, Attribute data) const;
 
 public:
@@ -502,7 +502,7 @@ void AggregateConstantOpConversion::flatten(
 }
 
 Value AggregateConstantOpConversion::constructAggregate(
-    OpBuilder &builder, const TypeConverter &typeConverter, Location loc,
+    OpBuilder &builder, TypeConverter &typeConverter, Location loc,
     Type type, Attribute data) const {
   Type llvmType = typeConverter.convertType(type);
 

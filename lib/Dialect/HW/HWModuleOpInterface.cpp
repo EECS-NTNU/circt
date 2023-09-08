@@ -21,7 +21,7 @@ using namespace hw;
 //===----------------------------------------------------------------------===//
 
 static LogicalResult convertModuleOpTypes(HWModuleLike modOp,
-                                          const TypeConverter &typeConverter,
+                                          TypeConverter &typeConverter,
                                           ConversionPatternRewriter &rewriter) {
   ModuleType type = modOp.getHWModuleType();
   if (!type)
@@ -70,7 +70,7 @@ static LogicalResult convertModuleOpTypes(HWModuleLike modOp,
 namespace {
 struct HWModuleLikeSignatureConversion : public ConversionPattern {
   HWModuleLikeSignatureConversion(StringRef moduleLikeOpName, MLIRContext *ctx,
-                                  const TypeConverter &converter)
+                                  TypeConverter &converter)
       : ConversionPattern(converter, moduleLikeOpName, /*benefit=*/1, ctx) {}
 
   LogicalResult

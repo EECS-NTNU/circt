@@ -30,15 +30,15 @@ using namespace circt::parsing_util;
 
 llvm::SmallVector<Value>
 circt::pipeline::detail::getValuesDefinedOutsideRegion(Region &region) {
-  llvm::SetVector<Value> values;
+  llvm::SmallVector<Value> values;
   region.walk([&](Operation *op) {
     for (auto operand : op->getOperands()) {
       if (region.isAncestor(operand.getParentRegion()))
         continue;
-      values.insert(operand);
+      values.push_back(operand);
     }
   });
-  return values.takeVector();
+  return values;
 }
 
 Block *circt::pipeline::getParentStageInPipeline(ScheduledPipelineOp pipeline,

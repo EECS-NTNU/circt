@@ -865,7 +865,7 @@ struct ObjectSubfieldOpConversion
   using OpConversionPattern::OpConversionPattern;
 
   ObjectSubfieldOpConversion(
-      const TypeConverter &typeConverter, MLIRContext *context,
+      TypeConverter &typeConverter, MLIRContext *context,
       const DenseMap<StringAttr, firrtl::ClassType> &classTypeTable)
       : OpConversionPattern(typeConverter, context),
         classTypeTable(classTypeTable) {}
