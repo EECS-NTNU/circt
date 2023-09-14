@@ -1771,8 +1771,7 @@ LogicalResult ConcatOp::canonicalize(ConcatOp op, PatternRewriter &rewriter) {
                     bitcast.getInput().getDefiningOp<hw::ArraySliceOp>())
               return ArraySlice{
                   arraySlice.getInput(), arraySlice.getLowIndex(),
-                  hw::type_cast<hw::ArrayType>(arraySlice.getType())
-                      .getNumElements()};
+                  hw::type_cast<hw::ArrayType>(arraySlice.getType()).getSize()};
           return std::nullopt;
         }
       };

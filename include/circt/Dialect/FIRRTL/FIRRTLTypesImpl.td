@@ -14,7 +14,6 @@
 #define CIRCT_DIALECT_FIRRTL_FIRRTLTYPESIMPL_TD
 
 include "FIRRTLDialect.td"
-include "circt/Dialect/FIRRTL/FIRRTLTypeInterfaces.td"
 include "circt/Dialect/HW/HWTypeInterfaces.td"
 
 // Base class for other typedefs. Provides dialact-specific defaults.
@@ -30,6 +29,14 @@ class FIRRTLImplType<string name,
   // which is common on FIRRTLBaseType anyway, so we generate the other
   // accessors manually
   let genAccessors = false;
+}
+
+//===----------------------------------------------------------------------===//
+// Type Traits
+//===----------------------------------------------------------------------===//
+
+def WidthQualifiedTypeTrait : NativeTypeTrait<"WidthQualifiedTypeTrait"> {
+  let cppNamespace = "::circt::firrtl";
 }
 
 //===----------------------------------------------------------------------===//

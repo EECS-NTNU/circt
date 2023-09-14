@@ -47,7 +47,7 @@ MlirType hwArrayTypeGetElementType(MlirType type) {
 }
 
 intptr_t hwArrayTypeGetSize(MlirType type) {
-  return unwrap(type).cast<ArrayType>().getNumElements();
+  return unwrap(type).cast<ArrayType>().getSize();
 }
 
 bool hwTypeIsAIntType(MlirType type) { return unwrap(type).isa<IntType>(); }

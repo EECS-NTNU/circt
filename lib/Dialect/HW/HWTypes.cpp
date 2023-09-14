@@ -105,10 +105,10 @@ int64_t circt::hw::getBitWidth(mlir::Type type) {
         int64_t elementBitWidth = getBitWidth(a.getElementType());
         if (elementBitWidth < 0)
           return elementBitWidth;
-        int64_t dimBitWidth = a.getNumElements();
+        int64_t dimBitWidth = a.getSize();
         if (dimBitWidth < 0)
           return static_cast<int64_t>(-1L);
-        return (int64_t)a.getNumElements() * elementBitWidth;
+        return (int64_t)a.getSize() * elementBitWidth;
       })
       .Case<StructType>([](StructType s) {
         int64_t total = 0;
@@ -517,7 +517,7 @@ void ArrayType::print(AsmPrinter &p) const {
   p << '>';
 }
 
-size_t ArrayType::getNumElements() const {
+size_t ArrayType::getSize() const {
   if (auto intAttr = getSizeAttr().dyn_cast<IntegerAttr>())
     return intAttr.getInt();
   return -1;
@@ -531,8 +531,7 @@ LogicalResult ArrayType::verify(function_ref<InFlightDiagnostic()> emitError,
 }
 
 uint64_t ArrayType::getMaxFieldID() const {
-  return getNumElements() *
-         (hw::FieldIdImpl::getMaxFieldID(getElementType()) + 1);
+  return getSize() * (hw::FieldIdImpl::getMaxFieldID(getElementType()) + 1);
 }
 
 std::pair<Type, uint64_t>
@@ -546,7 +545,7 @@ std::pair<uint64_t, bool>
 ArrayType::projectToChildFieldID(uint64_t fieldID, uint64_t index) const {
   auto childRoot = getFieldID(index);
   auto rangeEnd =
-      index >= getNumElements() ? getMaxFieldID() : (getFieldID(index + 1) - 1);
+      index >= getSize() ? getMaxFieldID() : (getFieldID(index + 1) - 1);
   return std::make_pair(fieldID - childRoot,
                         fieldID >= childRoot && fieldID <= rangeEnd);
 }
@@ -602,13 +601,12 @@ UnpackedArrayType::verify(function_ref<InFlightDiagnostic()> emitError,
   return success();
 }
 
-size_t UnpackedArrayType::getNumElements() const {
+size_t UnpackedArrayType::getSize() const {
   return getSizeAttr().cast<IntegerAttr>().getInt();
 }
 
 uint64_t UnpackedArrayType::getMaxFieldID() const {
-  return getNumElements() *
-         (hw::FieldIdImpl::getMaxFieldID(getElementType()) + 1);
+  return getSize() * (hw::FieldIdImpl::getMaxFieldID(getElementType()) + 1);
 }
 
 std::pair<Type, uint64_t>
@@ -623,7 +621,7 @@ UnpackedArrayType::projectToChildFieldID(uint64_t fieldID,
                                          uint64_t index) const {
   auto childRoot = getFieldID(index);
   auto rangeEnd =
-      index >= getNumElements() ? getMaxFieldID() : (getFieldID(index + 1) - 1);
+      index >= getSize() ? getMaxFieldID() : (getFieldID(index + 1) - 1);
   return std::make_pair(fieldID - childRoot,
                         fieldID >= childRoot && fieldID <= rangeEnd);
 }
@@ -685,11 +683,11 @@ static Type computeCanonicalType(Type type) {
       })
       .Case([](ArrayType t) {
         return ArrayType::get(computeCanonicalType(t.getElementType()),
-                              t.getNumElements());
+                              t.getSize());
       })
       .Case([](UnpackedArrayType t) {
         return UnpackedArrayType::get(computeCanonicalType(t.getElementType()),
-                                      t.getNumElements());
+                                      t.getSize());
       })
       .Case([](StructType t) {
         SmallVector<StructType::FieldInfo> fieldInfo;

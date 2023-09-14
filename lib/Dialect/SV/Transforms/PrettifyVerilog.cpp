@@ -160,9 +160,9 @@ bool PrettifyVerilogPass::splitArrayAssignment(OpBuilder &builder,
     // TODO: consider breaking up array assignments into assignments
     // to individual fields.
     auto ty = hw::type_cast<hw::ArrayType>(op.getType());
-    if (ty.getNumElements() != 1)
+    if (ty.getSize() != 1)
       return false;
-    APInt zero(std::max(1u, llvm::Log2_64_Ceil(ty.getNumElements())), 0);
+    APInt zero(std::max(1u, llvm::Log2_64_Ceil(ty.getSize())), 0);
 
     Value value = op.getInputs()[0];
     auto loc = op.getLoc();
@@ -191,8 +191,7 @@ bool PrettifyVerilogPass::splitArrayAssignment(OpBuilder &builder,
       auto midL = dyn_cast_or_null<hw::ArrayCreateOp>(c[1].getDefiningOp());
       auto midR = dyn_cast_or_null<hw::ArrayCreateOp>(c[0].getDefiningOp());
 
-      auto size =
-          hw::type_cast<hw::ArrayType>(concat.getType()).getNumElements();
+      auto size = hw::type_cast<hw::ArrayType>(concat.getType()).getSize();
       if (lhs && midR) {
         auto baseIdx = getInt(lhs.getLowIndex());
         if (!baseIdx || *baseIdx != 0 || midR.getInputs().size() != 1)
@@ -229,8 +228,7 @@ bool PrettifyVerilogPass::splitArrayAssignment(OpBuilder &builder,
       if (arr != rhs.getInput() || arr.getType() != concat.getType())
         break;
 
-      auto lhsSize =
-          hw::type_cast<hw::ArrayType>(lhs.getType()).getNumElements();
+      auto lhsSize = hw::type_cast<hw::ArrayType>(lhs.getType()).getSize();
       auto lhsIdx = getInt(lhs.getLowIndex());
       auto rhsIdx = getInt(rhs.getLowIndex());
       if (!lhsIdx || *lhsIdx != 0)

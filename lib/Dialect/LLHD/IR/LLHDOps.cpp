@@ -135,7 +135,7 @@ unsigned circt::llhd::getLLHDTypeWidth(Type type) {
   else if (auto ptr = type.dyn_cast<llhd::PtrType>())
     type = ptr.getUnderlyingType();
   if (auto array = type.dyn_cast<hw::ArrayType>())
-    return array.getNumElements();
+    return array.getSize();
   if (auto tup = type.dyn_cast<hw::StructType>())
     return tup.getElements().size();
   return type.getIntOrFloatBitWidth();

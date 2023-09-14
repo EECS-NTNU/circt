@@ -157,7 +157,7 @@ static Value getMemoryRead(ImplicitLocOpBuilder &b, Value memory, Value addr,
                                 .cast<hw::InOutType>()
                                 .getElementType()
                                 .cast<hw::UnpackedArrayType>()
-                                .getNumElements() <= 1)
+                                .getSize() <= 1)
     return slot;
   circt::sv::setSVAttributes(
       slot, sv::SVAttributeAttr::get(b.getContext(), "cadence map_to_mux",

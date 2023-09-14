@@ -1250,7 +1250,7 @@ IntType IntType::get(MLIRContext *context, bool isSigned,
   return UIntType::get(context, widthOrSentinel, isConst);
 }
 
-int32_t IntType::getWidthOrSentinel() const {
+int32_t IntType::getWidthOrSentinel() {
   if (auto sintType = type_dyn_cast<SIntType>(*this))
     return sintType.getWidthOrSentinel();
   if (auto uintType = type_dyn_cast<UIntType>(*this))
