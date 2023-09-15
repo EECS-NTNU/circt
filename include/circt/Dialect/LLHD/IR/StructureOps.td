@@ -12,7 +12,7 @@
 
 def LLHD_EntityOp : LLHD_Op<"entity", [
     Symbol,
-    DeclareOpInterfaceMethods<FunctionOpInterface>,
+    FunctionOpInterface,
     IsolatedFromAbove,
     SingleBlock,
     NoTerminator,
@@ -60,6 +60,12 @@ def LLHD_EntityOp : LLHD_Op<"entity", [
   let hasVerifier = 1;
 
   let extraClassDeclaration = [{
+    /// Returns the argument types of this function.
+    ArrayRef<Type> getArgumentTypes() { return getFunctionType().getInputs(); }
+
+    /// Returns the result types of this function.
+    ArrayRef<Type> getResultTypes() { return getFunctionType().getResults(); }
+
     /// Verify the type attribute of this function. Returns failure and emits
     /// an error if the attribute is invalid.
     LogicalResult verifyType();
@@ -77,7 +83,7 @@ def LLHD_EntityOp : LLHD_Op<"entity", [
 
 def LLHD_ProcOp : LLHD_Op<"proc", [
     Symbol,
-    DeclareOpInterfaceMethods<FunctionOpInterface>,
+    FunctionOpInterface,
     IsolatedFromAbove,
     DeclareOpInterfaceMethods<CallableOpInterface>
   ]> {
@@ -128,6 +134,12 @@ def LLHD_ProcOp : LLHD_Op<"proc", [
   let regions = (region AnyRegion: $body);
 
   let extraClassDeclaration = [{
+    /// Returns the argument types of this function.
+    ArrayRef<Type> getArgumentTypes() { return getFunctionType().getInputs(); }
+
+    /// Returns the result types of this function.
+    ArrayRef<Type> getResultTypes() { return getFunctionType().getResults(); }
+
     /// Verify the type attribute of this function. Returns failure and emits
     /// an error if the attribute is invalid.
     LogicalResult verifyType();

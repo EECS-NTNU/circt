@@ -122,7 +122,7 @@ namespace {
 struct constant_int_all_ones_matcher {
   bool match(Operation *op) {
     APInt value;
-    return mlir::detail::constant_int_value_binder(&value).match(op) &&
+    return mlir::detail::constant_int_op_binder(&value).match(op) &&
            value.isAllOnes();
   }
 };
@@ -529,18 +529,20 @@ LogicalResult circt::llhd::EntityOp::verifyBody() {
   return failure(walkResult.wasInterrupted());
 }
 
-/// Returns the argument types of this function.
-ArrayRef<Type> llhd::EntityOp::getArgumentTypes() {
-  return getFunctionType().getInputs();
+Region *llhd::EntityOp::getCallableRegion() {
+  return isExternal() ? nullptr : &getBody();
 }
 
-/// Returns the result types of this function.
-ArrayRef<Type> llhd::EntityOp::getResultTypes() {
+ArrayRef<Type> llhd::EntityOp::getCallableResults() {
   return getFunctionType().getResults();
 }
 
-Region *llhd::EntityOp::getCallableRegion() {
-  return isExternal() ? nullptr : &getBody();
+ArrayAttr llhd::EntityOp::getCallableArgAttrs() {
+  return getArgAttrs().value_or(nullptr);
+}
+
+ArrayAttr llhd::EntityOp::getCallableResAttrs() {
+  return getResAttrs().value_or(nullptr);
 }
 
 //===----------------------------------------------------------------------===//
@@ -563,16 +565,6 @@ LogicalResult circt::llhd::ProcOp::verifyType() {
     }
   }
   return success();
-}
-
-/// Returns the argument types of this function.
-ArrayRef<Type> llhd::ProcOp::getArgumentTypes() {
-  return getFunctionType().getInputs();
-}
-
-/// Returns the result types of this function.
-ArrayRef<Type> llhd::ProcOp::getResultTypes() {
-  return getFunctionType().getResults();
 }
 
 LogicalResult circt::llhd::ProcOp::verifyBody() { return success(); }
@@ -716,6 +708,18 @@ void llhd::ProcOp::print(OpAsmPrinter &printer) {
 
 Region *llhd::ProcOp::getCallableRegion() {
   return isExternal() ? nullptr : &getBody();
+}
+
+ArrayRef<Type> llhd::ProcOp::getCallableResults() {
+  return getFunctionType().getResults();
+}
+
+ArrayAttr llhd::ProcOp::getCallableArgAttrs() {
+  return getArgAttrs().value_or(nullptr);
+}
+
+ArrayAttr llhd::ProcOp::getCallableResAttrs() {
+  return getResAttrs().value_or(nullptr);
 }
 
 //===----------------------------------------------------------------------===//
