@@ -29,7 +29,7 @@ using llvm::SmallDenseSet;
 // FIR Memory Parametrization
 //===----------------------------------------------------------------------===//
 
-namespace {
+namespace circt {
 /// The configuration of a FIR memory.
 struct FirMemConfig {
   size_t numReadPorts = 0;
@@ -104,8 +104,8 @@ namespace {
 
 struct LowerFirMemPass : public impl::LowerFirMemBase<LowerFirMemPass> {
   /// A vector of unique `FirMemConfig`s and all the `FirMemOp`s that use it.
-  using UniqueConfig = std::pair<FirMemConfig, SmallVector<FirMemOp, 1>>;
-  using UniqueConfigs = std::vector<UniqueConfig>;
+  using UniqueConfig = std::pair<circt::FirMemConfig, SmallVector<seq::FirMemOp, 1>>;
+  using UniqueConfigs = SmallVector<UniqueConfig>;
 
   void runOnOperation() override;
 
