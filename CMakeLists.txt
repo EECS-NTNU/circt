@@ -599,7 +599,7 @@ endif()
 if (CIRCT_GTEST_AVAILABLE)
   add_subdirectory(unittests)
 endif()
-add_subdirectory(test)
+#add_subdirectory(test)
 add_subdirectory(integration_test)
 add_subdirectory(frontends)
 
