@@ -158,36 +158,6 @@ struct ConstantEmitter : OpEmissionPattern<ConstantOp> {
     p.emitAttr(value.getDefiningOp<ConstantOp>().getValue());
   }
 };
-
-/// Emit an emitc.variable operation.
-struct VariableEmitter : OpEmissionPattern<VariableOp> {
-  using OpEmissionPattern::OpEmissionPattern;
-
-  MatchResult matchInlinable(Value value) override {
-    if (auto varOp = value.getDefiningOp<VariableOp>()) {
-      if (!varOp->getAttrOfType<StringAttr>("name"))
-        return {};
-      return Precedence::VAR;
-    }
-    return {};
-  }
-
-  void emitInlined(Value value, EmissionPrinter &p) override {
-    p << value.getDefiningOp()->getAttrOfType<StringAttr>("name").getValue();
-  }
-
-  void emitStatement(VariableOp op, EmissionPrinter &p) override {
-    p.emitType(op.getResult().getType());
-    p << " " << op->getAttrOfType<StringAttr>("name").getValue();
-
-    if (op.getValue()) {
-      p << " = ";
-      p.emitAttr(op.getValue());
-    }
-
-    p << ";\n";
-  }
-};
 } // namespace
 
 //===----------------------------------------------------------------------===//
@@ -208,13 +178,6 @@ struct PointerTypeEmitter : TypeEmissionPattern<PointerType> {
   void emitType(PointerType type, EmissionPrinter &p) override {
     p.emitType(type.getPointee());
     p << "*";
-  }
-};
-
-/// Emit an emitc.ptr type.
-struct LValueTypeEmitter : TypeEmissionPattern<LValueType> {
-  void emitType(LValueType type, EmissionPrinter &p) override {
-    p.emitType(type.getValueType());
   }
 };
 } // namespace
@@ -238,12 +201,12 @@ struct OpaqueAttrEmitter : AttrEmissionPattern<OpaqueAttr> {
 void circt::ExportSystemC::populateEmitCOpEmitters(
     OpEmissionPatternSet &patterns, MLIRContext *context) {
   patterns.add<IncludeEmitter, ApplyOpEmitter, CallOpEmitter, CastOpEmitter,
-               ConstantEmitter, VariableEmitter>(context);
+               ConstantEmitter>(context);
 }
 
 void circt::ExportSystemC::populateEmitCTypeEmitters(
     TypeEmissionPatternSet &patterns) {
-  patterns.add<OpaqueTypeEmitter, PointerTypeEmitter, LValueTypeEmitter>();
+  patterns.add<OpaqueTypeEmitter, PointerTypeEmitter>();
 }
 
 void circt::ExportSystemC::populateEmitCAttrEmitters(

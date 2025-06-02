@@ -397,7 +397,7 @@ void DedupPass::runOnOperation() {
   // Collect the arc call sites.
   getOperation().walk([&](mlir::CallOpInterface callOp) {
     if (auto defOp = dyn_cast_or_null<DefineOp>(
-            callOp.resolveCallableInTable(&symbolTable)))
+            callOp.resolveCallable(&symbolTable)))
       callSites[defOp].insert(callOp);
   });
 
@@ -733,7 +733,7 @@ void DedupPass::replaceArcWith(DefineOp oldArc, DefineOp newArc,
 
   oldArc.walk([&](mlir::CallOpInterface callOp) {
     if (auto defOp = dyn_cast_or_null<DefineOp>(
-            callOp.resolveCallableInTable(&symbolTable)))
+            callOp.resolveCallable(&symbolTable)))
       callSites[defOp].remove(callOp);
   });
   callSites.erase(oldArc);

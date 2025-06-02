@@ -867,7 +867,7 @@ struct CaseXZEqOpConversion : public OpConversionPattern<SourceOp> {
     // TODO: Once the core dialects support four-valued integers, we will have
     // to create ops that extract X and Z bits from the operands, since we also
     // have to do the right casez/casex comparison on non-constant inputs.
-    unsigned bitWidth = op.getLhs().getType().getWidth();
+    unsigned bitWidth = cast<IntegerType>(op.getLhs().getType()).getWidth();
     auto ignoredBits = APInt::getZero(bitWidth);
     auto detectIgnoredBits = [&](Value value) {
       auto constOp = value.getDefiningOp<ConstantOp>();
